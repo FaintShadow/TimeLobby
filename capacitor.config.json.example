@@ -1,0 +1,10 @@
+{
+    "appId": "com.example.timelobby",
+    "appName": "TimeLobby",
+    "webDir": "public/build",
+    "server": {
+        "androidScheme": "https",
+        "url": "http://10.0.2.2:8000",
+        "cleartext": true
+    }
+}
