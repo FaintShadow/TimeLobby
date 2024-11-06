@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\admin\AcademicController;
 use App\Http\Controllers\admin\InstituteController;
 use App\Http\Controllers\BuildingController;
 use Illuminate\Support\Facades\Route;
@@ -28,11 +29,30 @@ Route::middleware(['auth', 'isAdmin'])->name('admin.')->prefix('/admin')->group(
 
     Route::prefix('/institutes')->name('institutes.')->group(function () {
         Route::get('', [InstituteController::class, 'index'])->name('index');
+
         Route::get('/add', [InstituteController::class, 'create'])->name('create');
         Route::post('/add', [InstituteController::class, 'store'])->name('store');
+
         Route::get('/edit/{institute}', [InstituteController::class, 'edit'])->name('edit');
+        Route::put('/update/{institute}', [InstituteController::class, 'update'])->name('update');
+
+        Route::get('/view/{institute}', [InstituteController::class, 'show'])->name('show');
 
         Route::delete('/bulkdelete', [InstituteController::class, 'bulkDelete'])->name('bulk-delete');
+    });
+
+    Route::prefix('/academics')->name('academics.')->group(function () {
+        Route::get('', [AcademicController::class, 'index'])->name('index');
+
+        Route::get('/add', [AcademicController::class, 'create'])->name('create');
+        Route::post('/add', [AcademicController::class, 'store'])->name('store');
+
+        Route::get('/edit/{academic}', [AcademicController::class, 'edit'])->name('edit');
+        Route::put('/update/{academic}', [AcademicController::class, 'update'])->name('update');
+
+        Route::get('/view/{academic}', [AcademicController::class, 'show'])->name('show');
+
+        Route::delete('/bulkdelete', [AcademicController::class, 'bulkDelete'])->name('bulk-delete');
     });
 
 });

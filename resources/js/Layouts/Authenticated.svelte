@@ -29,27 +29,32 @@
                         </svg>
                     </div>
                     <ul class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                        <li>
-                            <a>Academic</a>
-                            <ul class="p-2">
-                                <li><a>Classes</a></li>
-                                <li><a>Students</a></li>
-                                <li><a>Subjects</a></li>
-                                <li><a>Teachers</a></li>
-                                <li><a>Years</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="">Institutes</a></li>
-                        <li><a href="">Managers</a></li>
-                        <li>
-                            <a>Spaces</a>
-                            <ul class="p-2">
-                                <li><a>Buildings</a></li>
-                                <li><a>Rooms</a></li>
-                            </ul>
-                        </li>
-                        <li><a>Tags</a></li>
-                        <li><a>Activities</a></li>
+                        {#if user.role !== 'admin'}
+                            <li>
+                                <a>Academic</a>
+                                <ul class="p-2">
+                                    <li><a>Classes</a></li>
+                                    <li><a>Students</a></li>
+                                    <li><a>Subjects</a></li>
+                                    <li><a>Teachers</a></li>
+                                    <li><a>Years</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="">Institutes</a></li>
+                            <li><a href="">Managers</a></li>
+                            <li>
+                                <a>Spaces</a>
+                                <ul class="p-2">
+                                    <li><a>Buildings</a></li>
+                                    <li><a>Rooms</a></li>
+                                </ul>
+                            </li>
+                            <li><a>Tags</a></li>
+                            <li><a>Activities</a></li>
+                        {:else if user.role === 'admin'}
+                            <li><a href="/admin/academics" use:inertia>Academics</a></li>
+                            <li><a href="/admin/institutes" use:inertia>Institutes</a></li>
+                        {/if}
                     </ul>
                 </div>
             {/if}
@@ -58,35 +63,42 @@
                 <span>TimeLobby</span>
             </a>
         </div>
-        <div class="navbar-center hidden lg:flex">
-            {#if showNav}
-                <ul class="menu menu-horizontal px-1">
-                    <li>
-                        <details>
-                            <summary>Academic</summary>
-                            <ul class="p-2">
-                                <li><a>Classes</a></li>
-                                <li><a>Students</a></li>
-                                <li><a>Subjects</a></li>
-                                <li><a>Teachers</a></li>
-                                <li><a>Years</a></li>
-                            </ul>
-                        </details>
-                    </li>
-                    <li><a>Activities</a></li>
-                    <li>
-                        <details>
-                            <summary>Space</summary>
-                            <ul class="p-2">
-                                <li><a>Buildings</a></li>
-                                <li><a>Rooms</a></li>
-                            </ul>
-                        </details>
-                    </li>
-                    <li><a>Tags</a></li>
-                </ul>
-            {/if}
-        </div>
+        {#if showNav}
+            <div class="navbar-center hidden lg:flex">
+                {#if user.role !== 'admin'}
+                    <ul class="menu menu-horizontal px-1">
+                        <li>
+                            <details>
+                                <summary>Academic</summary>
+                                <ul class="p-2">
+                                    <li><a>Classes</a></li>
+                                    <li><a>Students</a></li>
+                                    <li><a>Subjects</a></li>
+                                    <li><a>Teachers</a></li>
+                                    <li><a>Years</a></li>
+                                </ul>
+                            </details>
+                        </li>
+                        <li><a>Activities</a></li>
+                        <li>
+                            <details>
+                                <summary>Space</summary>
+                                <ul class="p-2">
+                                    <li><a>Buildings</a></li>
+                                    <li><a>Rooms</a></li>
+                                </ul>
+                            </details>
+                        </li>
+                        <li><a>Tags</a></li>
+                    </ul>
+                {:else if user.role === 'admin'}
+                    <ul class="menu menu-horizontal px-1">
+                        <li><a href="/admin/academics" use:inertia>Academics</a></li>
+                        <li><a href="/admin/institutes" use:inertia>Institutes</a></li>
+                    </ul>
+                {/if}
+            </div>
+        {/if}
         <div class="navbar-end">
             {#if showProfile}
                 <div class="dropdown dropdown-end">

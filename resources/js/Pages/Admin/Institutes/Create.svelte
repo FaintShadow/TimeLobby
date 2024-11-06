@@ -22,7 +22,7 @@
 </script>
 
 <AuthenticatedLayout>
-    <form on:submit|preventDefault={handleSubmit} class="form-control">
+    <form on:submit|preventDefault={handleSubmit} class="form-control" type="x-www-form-urlencoded">
         <label class="form-control w-full">
             <div class="label">
                 <span class="label-text">Full institute name</span>

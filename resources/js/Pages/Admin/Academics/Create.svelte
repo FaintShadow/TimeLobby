@@ -2,27 +2,26 @@
     import AuthenticatedLayout from "@/Layouts/Authenticated.svelte";
     import {router, useForm, page} from "@inertiajs/svelte";
 
-    let institute = $page.props.institute;
-    console.log(institute);
+    export let errors;
+    export let success;
 
-    $: errors = $page.props.errors;
-    $: success = $page.props.success;
+    $: errs = errors || $page.props.errors;
+    $: succes = success || $page.props.success;
+
+    console.log($page.props);
 
     let form = useForm({
-        id: institute.id,
-        name: institute.name,
-        description: institute.description,
-        established_at: institute.established_at,
+        academic_id: null,
+        institute_id: null,
     });
 
     function handleSubmit() {
-        errors = {};
-        router.put(`/admin/institutes/update/${institute.id}`, form);
+        router.post('/admin/institutes/add', form)
     }
 </script>
 
 <AuthenticatedLayout>
-    <form on:submit|preventDefault={handleSubmit} class="form-control">
+    <form on:submit|preventDefault={handleSubmit} class="form-control" type="x-www-form-urlencoded">
         <label class="form-control w-full">
             <div class="label">
                 <span class="label-text">Full institute name</span>
@@ -30,22 +29,28 @@
             <input
                 id="name"
                 type="text"
-                class="input input-sm input-bordered w-full"
-                value={institute.name}
-                readonly
+                class="input input-sm input-bordered w-full { errors.name ? 'input-error' : null }"
+                required
+                bind:value={form.name}
             />
+            <div class="label">
+                {#if (errors.name)}
+                    <span class="label-text-alt text-red-600">{errors.name}</span>
+                {/if}
+                <span class="label-text-alt"></span>
+            </div>
         </label>
 
         <label class="form-control w-full">
             <div class="label">
                 <span class="label-text">Description</span>
+                <span class="badge badge-info">Optional</span>
             </div>
             <textarea
                 id="description"
-                class="input input-md input-bordered w-full"
-                class:input-error={errors.description}
-                on:input={(e) => form.description = e.target.value}
-            >{institute.description ? institute.description : ""}</textarea>
+                class="input input-md input-bordered w-full { errors.description ? 'input-error' : null }"
+                bind:value={form.description}
+            />
             <div class="label">
                 {#if (errors.description)}
                     <span class="label-text-alt text-red-600">{errors.description}</span>
@@ -61,11 +66,16 @@
             <input
                 id="description"
                 type="date"
-                class="input input-sm input-bordered w-full"
-                value="{institute.established_at}"
+                class="input input-sm input-bordered w-full { errors.established_at ? 'input-error' : null }"
                 required
-                readonly
+                bind:value={form.established_at}
             />
+            <div class="label">
+                {#if (errors.established_at)}
+                    <span class="label-text-alt text-red-600">{errors.established_at}</span>
+                {/if}
+                <span class="label-text-alt"></span>
+            </div>
         </label>
 
         <div class="flex items-center justify-end mt-4">

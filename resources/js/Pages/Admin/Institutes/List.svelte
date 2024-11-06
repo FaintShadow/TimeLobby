@@ -1,6 +1,7 @@
 <script>
     import AuthenticatedLayout from "@/Layouts/Authenticated.svelte";
     import {page, router} from "@inertiajs/svelte";
+    import { goto } from "@/Components/Goto.svelte";
 
     // Vars
     export let success;
@@ -41,8 +42,7 @@
     function editSelected(){
         // TODO: add alert if there is nothing selected
         if (selected.length === 0) return;
-
-
+        goto(`institutes/edit/${selected[0]}`);
     }
 
 </script>

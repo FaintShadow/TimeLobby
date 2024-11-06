@@ -37,7 +37,7 @@ class InstitutePolicy
      */
     public function update(User $user, Institute $institute): bool
     {
-        //
+        return $user->role == 'admin' || $user->institute_id == $institute->id;
     }
 
     /**

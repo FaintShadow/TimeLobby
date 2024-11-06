@@ -39,7 +39,7 @@ class InstituteController extends Controller
      */
     public function store(StoreInstituteRequest $request)
     {
-        if ($request->validated()){
+        if ($request->validated()) {
             Institute::create($request->validated());
             return redirect()->route('admin.institutes.index')->with('success', 'Institute created successfully.');
         }
@@ -59,7 +59,9 @@ class InstituteController extends Controller
      */
     public function edit(Institute $institute)
     {
-        return Inertia::render('Admin/Institutes/Edit', []);
+        return Inertia::render('Admin/Institutes/Edit', [
+            'institute' => $institute
+        ]);
     }
 
     /**
@@ -67,7 +69,11 @@ class InstituteController extends Controller
      */
     public function update(UpdateInstituteRequest $request, Institute $institute)
     {
-        //
+        if ($request->validated()) {
+            $institute->update($request->validated());
+            return redirect()->route('admin.institutes.index')->with('success', $institute->name . ' updated successfully.');
+        }
+        return back()->withErrors($request)->withInput();
     }
 
     /**
@@ -78,8 +84,10 @@ class InstituteController extends Controller
         //
     }
 
-    public function bulkDelete(Request $request){$request->validate([
-           'ids' => ['required', 'array'],
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'ids' => ['required', 'array'],
         ]);
 
         Institute::whereIn('id', $request->ids)->delete();
