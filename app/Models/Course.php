@@ -2,34 +2,37 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Laravel\Scout\Searchable;
 
-class Course extends SpecifiableModel
+class Course extends Model
 {
+    use Searchable;
     protected $fillable = [
         'name'
     ];
 
-    protected function teachers(): hasMany
+    public function teachers(): HasMany
     {
         return $this->hasMany(User::class)->where('role', 'like', 'teacher');
     }
 
-    protected function students(): hasMany
+    public function students(): HasMany
     {
-        return $this->hasMany(User::class)->where('role', 'like', 'student');
+        return $this->hasMany(User::class)->Where('role', 'like', 'student');
     }
 
-    protected function tags(): MorphToMany
+    public function tags(): MorphToMany
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
 
-    protected function specifics(): MorphMany
+    public function groups(): BelongsToMany
     {
-        return $this->morphMany(Specific::class, 'specificable');
+        return $this->belongsToMany(Group::class);
     }
 }

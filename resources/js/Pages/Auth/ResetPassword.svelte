@@ -1,23 +1,18 @@
 <script>
-    import BreezeButton from "@/Components/Button.svelte";
-    import BreezeGuestLayout from "@/Layouts/Guest.svelte";
-    import BreezeInput from "@/Components/Input.svelte";
-    import BreezeLabel from "@/Components/Label.svelte";
-    import BreezeValidationErrors from "@/Components/ValidationErrors.svelte";
-    import { useForm } from "@inertiajs/svelte";
-    let err = {};
+    import GuestLayout from "@/Layouts/Guest.svelte";
+    import {useForm} from "@inertiajs/svelte";
+
     export let errors = {};
     export let email;
     export let token;
-    $: {
-        err = errors;
-    }
+
     const form = useForm({
         token: token,
         email: email,
-        password: null,
-        password_confirmation: null,
+        password: '',
+        password_confirmation: '',
     });
+
     const onSubmit = () => {
         $form.post("/reset-password", {
             onSuccess: () => $form.reset("password", "password_confirmation"),
@@ -26,60 +21,58 @@
 </script>
 
 <svelte:head>
-    <title>Reset Password</title>
+    <title>TL : Reset Password</title>
 </svelte:head>
 
-<BreezeGuestLayout>
-    <BreezeValidationErrors class="mb-4" errors={err} />
-
-    <form on:submit|preventDefault={onSubmit}>
-        <div>
-            <BreezeLabel for="email" value="Email" />
-            <BreezeInput
-                id="email"
-                type="email"
-                class="mt-1 block w-full"
-                value={form.email}
-                required
-                autofocus
-                autocomplete="username"
-                on:input={(evt) => ($form.email = evt.detail)}
+<GuestLayout>
+    <form on:submit|preventDefault={onSubmit} class="form-control">
+        <label class="form-control w-full">
+            <div class="label">
+                <span class="label-text">Password</span>
+            </div>
+            <input type="password"
+                   id="password"
+                   class="input input-sm input-bordered w-full"
+                   class:input-error={errors.password}
+                   required
+                   autocomplete="new-password"
+                   bind:value={$form.password}
             />
-        </div>
+            {#if (errors.password)}
+                <div class="label">
+                    <span class="label-text-alt text-red-600">{errors.password}</span>
+                </div>
+            {/if}
 
-        <div class="mt-4">
-            <BreezeLabel for="password" value="Password" />
-            <BreezeInput
-                id="password"
-                type="password"
-                class="mt-1 block w-full"
-                value={form.password}
-                required
-                autocomplete="new-password"
-                on:input={(evt) => ($form.password = evt.detail)}
-            />
-        </div>
+        </label>
 
-        <div class="mt-4">
-            <BreezeLabel for="password_confirmation" value="Confirm Password" />
-            <BreezeInput
-                id="password_confirmation"
-                type="password"
-                class="mt-1 block w-full"
-                value={form.password_confirmation}
-                required
-                autocomplete="new-password"
-                on:input={(evt) => ($form.password_confirmation = evt.detail)}
+        <label class="form-control w-full">
+            <div class="label">
+                <span class="label-text">Confirm password</span>
+            </div>
+            <input type="password"
+                   id="password_confirmation"
+                   class="input input-sm input-bordered w-full"
+                   class:input-error={errors.password_confirmation}
+                   required
+                   bind:value={$form.password_confirmation}
             />
-        </div>
+            {#if (errors.password_confirmation)}
+                <div class="label">
+                    <span class="label-text-alt text-red-600">{errors.password_confirmation}</span>
+                </div>
+            {/if}
+
+        </label>
 
         <div class="flex items-center justify-end mt-4">
-            <BreezeButton
-                xclass:opacity-25={form.processing}
+            <button
+                class:opacity-25={form.processing}
                 disabled={form.processing}
+                class="btn btn-sm btn-primary"
             >
                 Reset Password
-            </BreezeButton>
+            </button>
         </div>
     </form>
-</BreezeGuestLayout>
+</GuestLayout>

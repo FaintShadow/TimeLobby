@@ -4,7 +4,9 @@ namespace App\Policies;
 
 use App\Models\Building;
 use App\Models\User;
+use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Auth;
 
 class BuildingPolicy
 {
@@ -29,7 +31,7 @@ class BuildingPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return $user->role == 'institute-admin';
     }
 
     /**
@@ -37,7 +39,10 @@ class BuildingPolicy
      */
     public function update(User $user, Building $building): bool
     {
-        //
+        Debugbar::info($user);
+        Debugbar::info($building);
+        return $user->role == 'institute-admin' && $user->institute_id == $building->institute->id;
+
     }
 
     /**
@@ -45,7 +50,7 @@ class BuildingPolicy
      */
     public function delete(User $user, Building $building): bool
     {
-        //
+        return $user->institute_id == $building->institute_id && $user->role == 'institute-admin';
     }
 
     /**

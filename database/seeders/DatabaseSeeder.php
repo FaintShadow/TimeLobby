@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Group;
 use App\Models\Institute;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Year;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,8 +16,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(15)->create();
-        Institute::factory(125)->create();
+
+        User::factory(20)->create();
+        Institute::factory(3)->create();
+        Year::factory(4)->create();
+        Group::factory(10)->create();
 
         /*
         User::factory()->create([

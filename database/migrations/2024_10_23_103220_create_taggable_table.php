@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('taggable', function (Blueprint $table) {
-            $table->foreignId('tag_id')->constrained('tags');
+            $table->foreignId('tag_id')->constrained();
             $table->unsignedBigInteger('taggable_id');
             $table->string('tag_type');
         });

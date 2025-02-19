@@ -9,6 +9,6 @@
         <a use:inertia href="/links">Links</a>
     </header>
     <article>
-        <slot />
+        <slot/>
     </article>
 </main>

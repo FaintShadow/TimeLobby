@@ -2,29 +2,51 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Laravel\Scout\Searchable;
 
-class Building extends SpecifiableModel
+class Building extends Model
 {
+    use Searchable;
+
+    public $timestamps = false;
+    public static $classroomMinCap = 15;
+    public static $buildingMinCap = 2;
+
     protected $fillable = [
-        'name'
+        'name',
+        'building_id',
+        'institute_id',
+        'maxCapacity'
     ];
 
-    protected function classRooms(): hasMany
+    public function classes(): hasMany
     {
-        return $this->hasMany(Building::class, 'main-building');
+        return $this->hasMany(Building::class);
     }
 
-    protected function mainBuilding(): belongsTo
+    public function building(): belongsTo
     {
         return $this->belongsTo(Building::class);
     }
 
-    protected function specifics(): MorphMany
+    public function institute(): belongsTo
     {
-        return $this->morphMany(Specific::class, 'specifiable');
+        return $this->belongsTo(Institute::class);
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'name' => $this->name,
+        ];
     }
 
 

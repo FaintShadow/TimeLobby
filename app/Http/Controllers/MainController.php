@@ -7,18 +7,27 @@ use Inertia\Inertia;
 
 class MainController extends Controller
 {
+    protected $roleDashboards = [
+        'admin' => 'admin.institutes.index',
+        'institute-admin' => 'institute.dashboard',
+        'institute-manager' => 'institute.dashboard',
+        'teacher' => 'institute.dashboard',
+        'student' => 'institute.dashboard'
+    ];
+
     public function index()
     {
-        if (Auth::check()) {
-            if (Auth::user()->institute_id) {
-                $dashboard = new DashboardController();
-                return $dashboard->index();
-            } elseif (Auth::user()->role == 'admin'){
-                return redirect()->route('admin.institutes.index');
-            } else {
-                return Inertia::render('noInstitute');
-            }
+        if (!Auth::check()) {
+            return redirect()->intended('/login');
         }
-        return redirect()->intended('/login');
+
+        $user = Auth::user();
+
+        if (!$user->institute_id && $user->role !== 'admin') {
+            return redirect()->route('noInstitute');
+        }
+
+        $route = $this->roleDashboards[$user->role] ?? 'logout';
+        return redirect()->route($route);
     }
 }

@@ -2,6 +2,8 @@
     import GuestLayout from "@/Layouts/Guest.svelte";
     import {inertia, useForm, router, page} from "@inertiajs/svelte";
 
+    export let errors
+
     let form = useForm({
         firstname: null,
         lastname: null,
@@ -11,16 +13,13 @@
         terms: false,
     });
 
-    $: errors = $page.props.errors || {};
-
     function handleSubmit() {
-        console.log("errors: " + errors);
         router.post('/register', form)
     }
 </script>
 
 <svelte:head>
-    <title>Register</title>
+    <title>TL : Register</title>
 </svelte:head>
 
 <GuestLayout>
@@ -134,7 +133,7 @@
             </a>
 
             <button
-                class="btn btn-sm btn-neutral ml-4"
+                class="btn btn-sm btn-primary ml-4"
                 disabled={form["processing"]}
             >
                 Register

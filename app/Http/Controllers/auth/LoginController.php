@@ -12,7 +12,11 @@ class LoginController extends Controller
     public function create()
     {
         return Inertia::render('Auth/Login', [
-            'errors' => session('errors') ? session('errors')->getBag('default')->toArray() : [],
+            'links' => [
+                'password.request' => route('password.request'),
+                'login' => route('login'),
+                'register' => route('register'),
+            ],
         ]);
     }
 

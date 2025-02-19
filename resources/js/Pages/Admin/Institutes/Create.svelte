@@ -1,14 +1,11 @@
 <script>
     import AuthenticatedLayout from "@/Layouts/Authenticated.svelte";
-    import {router, useForm, page} from "@inertiajs/svelte";
+    import {router, useForm} from "@inertiajs/svelte";
+    import Input from "@/Components/DataInputs/Input/Input.svelte";
+    import {LabelTextConsts} from "@/Components/DataInputs/Input/LabelType";
 
-    export let errors;
-    export let success;
-
-    $: errs = errors || $page.props.errors;
-    $: succes = success || $page.props.success;
-
-    console.log($page.props);
+    // Vars
+    export let errors, links
 
     let form = useForm({
         name: null,
@@ -16,68 +13,102 @@
         established_at: null,
     });
 
+    console.log(links)
+
+    $: {
+        console.log(errors)
+    }
+
+    const nameTL = {
+        left: {
+            text: 'Institute Full Name:'
+        },
+        right: {
+            type: LabelTextConsts.BADGE,
+            styling: "badge-error text-error-content",
+            text: "REQUIRED"
+        }
+    }
+
+    $: nameBL = {
+        position: LabelTextConsts.BOTTOM,
+        left: {
+            styling: 'text-error',
+            text: errors.name
+        },
+        show: errors.name ?? false
+    }
+
+    const descTL = {
+        left: {
+            text: 'Description:'
+        }
+    }
+
+    $: descBL = {
+        position: LabelTextConsts.BOTTOM,
+        left: {
+            styling: 'text-error',
+            text: errors.description,
+        },
+        show: errors.description ?? false
+    }
+
+    const dateTL = {
+        left: {
+            text: 'Establishment Date:'
+        },
+        right: {
+            type: LabelTextConsts.BADGE,
+            styling: "badge-error text-error-content",
+            text: "REQUIRED"
+        }
+    }
+
+    $: dateBL = {
+        position: LabelTextConsts.BOTTOM,
+        left: {
+            styling: 'text-error',
+            text: errors.established_at,
+        },
+        show: errors.established_at ?? false
+    }
+
+
+    // Functions:
     function handleSubmit() {
-        router.post('/admin/institutes/add', form)
+        router.post(links["admin.institutes.store"], form)
     }
 </script>
 
+<svelte:head>
+    <title>TL : Add Institute</title>
+</svelte:head>
+
 <AuthenticatedLayout>
-    <form on:submit|preventDefault={handleSubmit} class="form-control" type="x-www-form-urlencoded">
-        <label class="form-control w-full">
-            <div class="label">
-                <span class="label-text">Full institute name</span>
-            </div>
-            <input
-                id="name"
-                type="text"
-                class="input input-sm input-bordered w-full { errors.name ? 'input-error' : null }"
-                required
-                bind:value={form.name}
-            />
-            <div class="label">
-                {#if (errors.name)}
-                    <span class="label-text-alt text-red-600">{errors.name}</span>
-                {/if}
-                <span class="label-text-alt"></span>
-            </div>
-        </label>
+    <form on:submit|preventDefault={handleSubmit} class="form-control w-full max-w-md mx-auto gap-0.5" type="x-www-form-urlencoded">
+        <Input
+            topLabel={nameTL}
+            bottomLabel={nameBL}
+            bind:value={form.name}
+        />
 
-        <label class="form-control w-full">
-            <div class="label">
-                <span class="label-text">Description</span>
-                <span class="badge badge-info">Optional</span>
-            </div>
-            <textarea
-                id="description"
-                class="input input-md input-bordered w-full { errors.description ? 'input-error' : null }"
-                bind:value={form.description}
-            />
-            <div class="label">
-                {#if (errors.description)}
-                    <span class="label-text-alt text-red-600">{errors.description}</span>
-                {/if}
-                <span class="label-text-alt"></span>
-            </div>
-        </label>
+        <Input
+            type="textarea"
+            placeholder="This institute is..."
+            topLabel={descTL}
+            bottomLabel={descBL}
+            required="{false}"
+            bind:value={form.description}
+        />
 
-        <label class="form-control w-full">
-            <div class="label">
-                <span class="label-text">Establishment Date</span>
-            </div>
-            <input
-                id="description"
-                type="date"
-                class="input input-sm input-bordered w-full { errors.established_at ? 'input-error' : null }"
-                required
-                bind:value={form.established_at}
-            />
-            <div class="label">
-                {#if (errors.established_at)}
-                    <span class="label-text-alt text-red-600">{errors.established_at}</span>
-                {/if}
-                <span class="label-text-alt"></span>
-            </div>
-        </label>
+        <Input
+            topLabel={dateTL}
+            bottomLabel={dateBL}
+            required="{false}"
+            type="date"
+            bind:value={form.established_at}
+        />
 
         <div class="flex items-center justify-end mt-4">
             <button disabled={form["processing"]} class="btn btn-sm btn-neutral ml-4">

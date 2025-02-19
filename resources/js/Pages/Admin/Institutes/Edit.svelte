@@ -1,76 +1,78 @@
 <script>
     import AuthenticatedLayout from "@/Layouts/Authenticated.svelte";
-    import {router, useForm, page} from "@inertiajs/svelte";
+    import {router, useForm} from "@inertiajs/svelte";
+    import Input from "@/Components/DataInputs/Input/Input.svelte";
+    import {LabelTextConsts} from "@/Components/DataInputs/Input/LabelType";
+    import { writable } from "svelte/store";
 
-    let institute = $page.props.institute;
-    console.log(institute);
+    export let errors, institute
 
-    $: errors = $page.props.errors;
-    $: success = $page.props.success;
-
-    let form = useForm({
-        id: institute.id,
-        name: institute.name,
-        description: institute.description,
-        established_at: institute.established_at,
+    const form = useForm({
+        description: institute.description
     });
 
+    const nameTL = {
+        left: {
+            text: 'Institute Full Name:'
+        }
+    }
+
+    const descTL = {
+        left: {
+            text: 'Description:'
+        }
+    }
+
+    $: descBL = {
+        position: LabelTextConsts.BOTTOM,
+        left: {
+            styling: 'text-error',
+            text: errors.description,
+        },
+        show: errors.description ?? false
+    }
+
+    const dateTL = {
+        left: {
+            text: 'Establishment Date:'
+        }
+    }
+
+    $: {
+        console.log("Form desc: ", $form.description)
+    }
+
+
     function handleSubmit() {
-        errors = {};
-        router.put(`/admin/institutes/update/${institute.id}`, form);
+        router.put(`/admin/institutes/update/${institute.id}`, $form);
     }
 </script>
 
 <AuthenticatedLayout>
-    <form on:submit|preventDefault={handleSubmit} class="form-control">
-        <label class="form-control w-full">
-            <div class="label">
-                <span class="label-text">Full institute name</span>
-            </div>
-            <input
-                id="name"
-                type="text"
-                class="input input-sm input-bordered w-full"
-                value={institute.name}
-                readonly
-            />
-        </label>
+    <form on:submit|preventDefault={handleSubmit} class="form-control w-full max-w-md mx-auto gap-0.5">
+        <Input
+            topLabel={nameTL}
+            bind:value={institute.name}
+            readonly="{true}"
+        />
 
-        <label class="form-control w-full">
-            <div class="label">
-                <span class="label-text">Description</span>
-            </div>
-            <textarea
-                id="description"
-                class="input input-md input-bordered w-full"
-                class:input-error={errors.description}
-                on:input={(e) => form.description = e.target.value}
-            >{institute.description ? institute.description : ""}</textarea>
-            <div class="label">
-                {#if (errors.description)}
-                    <span class="label-text-alt text-red-600">{errors.description}</span>
-                {/if}
-                <span class="label-text-alt"></span>
-            </div>
-        </label>
+        <Input
+            topLabel={descTL}
+            bottomLabel={descBL}
+            type="textarea"
+            placeholder="This institute is..."
+            bind:value={$form.description}
+        />
 
-        <label class="form-control w-full">
-            <div class="label">
-                <span class="label-text">Establishment Date</span>
-            </div>
-            <input
-                id="description"
-                type="date"
-                class="input input-sm input-bordered w-full"
-                value="{institute.established_at}"
-                required
-                readonly
-            />
-        </label>
+        <Input
+            topLabel={dateTL}
+            bind:value={institute.established_at}
+            readonly="{true}"
+        />
 
         <div class="flex items-center justify-end mt-4">
             <button disabled={form["processing"]} class="btn btn-sm btn-neutral ml-4">
-                Add Institute
+                Apply
             </button>
         </div>
     </form>

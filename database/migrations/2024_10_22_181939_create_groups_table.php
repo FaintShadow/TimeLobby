@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
-            $table->string('number');
-            $table->integer('academic-year');
-            $table->integer('maxCapacity');
+            $table->string('name');
+            $table->integer('academic_year');
+            $table->integer('maxCapacity')->default(30);
             $table->integer('minCapacity')->default(1);
+            $table->unsignedBigInteger('main_group_id')->nullable();
+            $table->foreign('main_group_id')->references('id')->on('groups')->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('classes');
+        Schema::dropIfExists('groups');
     }
 };

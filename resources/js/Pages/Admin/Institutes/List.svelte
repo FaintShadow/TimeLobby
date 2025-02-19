@@ -1,22 +1,23 @@
 <script>
     import AuthenticatedLayout from "@/Layouts/Authenticated.svelte";
-    import {page, router} from "@inertiajs/svelte";
-    import { goto } from "@/Components/Goto.svelte";
+    import {router} from "@inertiajs/svelte";
+    import PaginateLayout from "@/Components/Paginate.svelte";
+    import autoAnimate from "@formkit/auto-animate";
 
     // Vars
-    export let success;
-    let values = []
-    for (const inst in $page.props.institutes) {
-        values.push($page.props.institutes[inst].id);
-    }
+    export let success, institutes;
 
-    // Reactive:
-    $: institutes = $page.props.institutes;
-    $: succ = success || {};
+    let values = []
+    let innerWidth;
+    let innerHeight;
+
     $: selected = [];
 
-
     // Functions:
+    $: {
+        values = institutes.data.map(item => item.id);
+    }
+
     function toggleAll(e) {
         selected = e.target.checked ? [...values] : [];
     }
@@ -28,24 +29,37 @@
         if (confirm(`Are you sure you want to remove ${selected.length} selected items?`)) {
             router.delete('institutes/bulkdelete',
                 {
-                data: {
-                    ids: selected
-                },
-                preserveScroll: true,
-                onSuccess: () => {
-                    selected = [];
-                },
-            });
+                    data: {
+                        ids: selected
+                    },
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        selected = [];
+                    },
+                });
         }
     }
 
-    function editSelected(){
+    function editSelected() {
         // TODO: add alert if there is nothing selected
         if (selected.length === 0) return;
-        goto(`institutes/edit/${selected[0]}`);
+        router.get(`institutes/edit/${selected[0]}`);
+    }
+
+    function loadPage(url) {
+        if (!url) return;
+        router.get(url, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: (page) => {
+                institutes = page.props.institutes;
+            }
+        });
     }
 
 </script>
+
+<svelte:window bind:innerWidth bind:innerHeight/>
 
 <AuthenticatedLayout>
     <div class="w-screen px-4">
@@ -70,14 +84,15 @@
         </button>
     </div>
     <!--Table -->
-    <div id="institutes" class="px-4 w-screen my-1">
+    <!--TODO: Manage what happens when there is nothing in the database-->
+    <div id="institutes" class="px-4 w-screen my-1" use:autoAnimate>
         <div class="bg-base-200 flex flex-row justify-items-center p-1.5 rounded-md my-1">
             <div class="flex justify-center border-r-2 pr-2 border-base-100">
                 <label class="h-0">
                     <input
                         type="checkbox"
                         on:change={toggleAll}
-                        checked={selected.length === institutes.length}
+                        checked={selected.length === values.length}
                         class="checkbox"/>
                 </label>
             </div>
@@ -86,19 +101,22 @@
             <div class="min-w-12 text-base-content px-2 hidden border-base-100 sm:inline">Staff</div>
         </div>
         {#if institutes}
-            {#each Object.entries(institutes) as [id, institute]}
-                <div class="flex flex-row justify-items-center p-1.5 rounded-md my-1">
-                    <div class="flex justify-center border-r-2 pr-2">
+            {#each Object.entries(institutes.data) as [id, institute]}
+                <div class="flex flex-row justify-items-center p-1.5 rounded-md my-1" use:autoAnimate>
+                    <div class="flex justify-center border-r-2 pr-2 border-base-200">
                         <label class="h-0">
                             <input type="checkbox" bind:group={selected} class="checkbox"
                                    name="institutes" value="{institute.id}"/>
                         </label>
                     </div>
-                    <div class="w-full px-2 border-r-0 sm:border-r-2">{institute.name}</div>
-                    <div class="min-w-20 px-2 hidden sm:inline border-r-2">{institute.students}</div>
-                    <div class="min-w-12 px-2 hidden sm:inline">{institute.academics}</div>
+                    <div class="w-full px-2 border-r-0 sm:border-r-2 border-base-200">{institute.name}</div>
+                    {#if innerWidth > 640}
+                        <div class="min-w-20 px-2 border-r-2 border-base-200">{institute.students}</div>
+                        <div class="min-w-12 px-2">{institute.academics}</div>
+                    {/if}
                 </div>
             {/each}
         {/if}
     </div>
+    <PaginateLayout links={institutes.links} {loadPage}/>
 </AuthenticatedLayout>

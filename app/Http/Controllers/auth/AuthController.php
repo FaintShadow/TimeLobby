@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\auth;
 
-use App\Http\Controllers\DashboardController;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -26,7 +26,7 @@ class AuthController extends Controller
                 [
                     'firstname' => ['required', 'string', 'min:3'],
                     'lastname' => ['required', 'string', 'min:3'],
-                    'email' => ['required', 'email'],
+                    'email' => ['required', 'email', 'unique:users'],
                     'password' => ['required', Password::defaults()],
                     'password_confirmation' => ['required', 'same:password'],
                 ],
@@ -44,15 +44,15 @@ class AuthController extends Controller
                 $input['password'] = bcrypt($input['password']);
                 $user = User::create($input);
 
+                event(new Registered($user));
+
                 Auth::login($user);
 
-                return redirect()->route('home');
+                return redirect()->route('verification.notice');
             }
         }
 
-        return Inertia::render('Auth/Register', [
-            'errors' => session('errors') ? session('errors')->getBag('default')->toArray() : [],
-        ]);
+        return Inertia::render('Auth/Register', []);
     }
 
     public function logout(Request $request)

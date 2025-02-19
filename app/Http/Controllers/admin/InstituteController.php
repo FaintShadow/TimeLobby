@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreInstituteRequest;
 use App\Http\Requests\UpdateInstituteRequest;
 use App\Models\Institute;
+use Barryvdh\Debugbar\Facades\Debugbar;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
@@ -16,13 +17,22 @@ class InstituteController extends Controller
      */
     public function index()
     {
+        $institutes = Institute::select(['id', 'name'])
+            ->withCount([
+                'students',
+                'academicStaff',
+                'teachers'
+            ])
+            ->paginate(10)
+            ->through(fn($institute) => [
+                'id' => $institute->id,
+                'name' => $institute->name,
+                'students' => $institute->students_count,
+                'academics' => $institute->academic_staff_count + $institute->teachers_count,
+            ]);
 
         return Inertia::render('Admin/Institutes/List', [
-            'institutes' => Institute::select(['id', 'name'])->paginate(10)->each(function ($institute) {
-                $institute['students'] = $institute->students()->count();
-                $institute['academics'] = $institute->academicStaff()->count() + $institute->teachers()->count();
-                return $institute;
-            })
+            'institutes' => $institutes,
         ]);
     }
 
@@ -31,7 +41,11 @@ class InstituteController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Institutes/Create', []);
+        return Inertia::render('Admin/Institutes/Create', [
+            'links' => [
+                'admin.institutes.store' => route('admin.institutes.store'),
+            ],
+        ]);
     }
 
     /**
@@ -39,11 +53,8 @@ class InstituteController extends Controller
      */
     public function store(StoreInstituteRequest $request)
     {
-        if ($request->validated()) {
-            Institute::create($request->validated());
-            return redirect()->route('admin.institutes.index')->with('success', 'Institute created successfully.');
-        }
-        return back()->withErrors($request)->withInput();
+        Institute::create($request->validated());
+        return redirect()->route('admin.institutes.index')->with('success', 'Institute created successfully.');
     }
 
     /**
@@ -69,11 +80,8 @@ class InstituteController extends Controller
      */
     public function update(UpdateInstituteRequest $request, Institute $institute)
     {
-        if ($request->validated()) {
-            $institute->update($request->validated());
-            return redirect()->route('admin.institutes.index')->with('success', $institute->name . ' updated successfully.');
-        }
-        return back()->withErrors($request)->withInput();
+        $institute->update($request->validated());
+        return redirect()->route('admin.institutes.index')->with('success', 'Institute updated successfully.');
     }
 
     /**
@@ -84,6 +92,9 @@ class InstituteController extends Controller
         //
     }
 
+    /**
+     * Remove a list of specified resources
+     */
     public function bulkDelete(Request $request)
     {
         $request->validate([
@@ -93,5 +104,13 @@ class InstituteController extends Controller
         Institute::whereIn('id', $request->ids)->delete();
 
         return redirect()->back()->with('success', 'Selected institutes have been removed.');
+    }
+
+    /**
+     * Admin specific search function:
+     */
+    public function Search(Request $request)
+    {
+        return Institute::search($request->search)->get();
     }
 }

@@ -29,7 +29,7 @@ class YearPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return $user->role == 'institute-admin';
     }
 
     /**
@@ -45,7 +45,7 @@ class YearPolicy
      */
     public function delete(User $user, Year $year): bool
     {
-        //
+        return $user->role == 'institute-admin' && $year->institutes()->has($user->institute());
     }
 
     /**

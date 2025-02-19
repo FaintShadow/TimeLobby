@@ -12,12 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('buildings', function (Blueprint $table) {
+
             $table->id();
-            $table->integer('maxCapacity')->nullable();
-            $table->unsignedBigInteger('main-building')->nullable();
-            $table->foreign('main-building')->references('id')->on('buildings');
-            $table->timestamps();
+            $table->string('name');
+            $table->foreignId('institute_id')->constrained()->cascadeOnDelete();
+            $table->integer('maxCapacity')->default(30);
+            $table->foreignId('building_id')->nullable()->constrained()->cascadeOnDelete();
+
+            $table->unique(['name', 'institute_id']);
         });
+
     }
 
     /**
@@ -28,3 +32,5 @@ return new class extends Migration
         Schema::dropIfExists('buildings');
     }
 };
+
+

@@ -2,23 +2,24 @@
     import GuestLayout from "@/Layouts/Guest.svelte";
     import {Link, router, useForm, page} from "@inertiajs/svelte";
 
-    export let canResetPassword = true;
+    export let canResetPassword = true
+    export let errors, links
+
+    console.log(links)
 
     let form = useForm({
         email: null,
         password: null,
         remember: false,
-    });
-
-    $: errors = $page.props.errors || {};
+    })
 
     function handleSubmit() {
-        router.post('/login', form)
+        router.post(links['login'], form)
     }
 </script>
 
 <svelte:head>
-    <title>Log in</title>
+    <title>TL : Log in</title>
 </svelte:head>
 
 <GuestLayout>
@@ -67,7 +68,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <label class="label cursor-pointer pl-0">
-                    <input type="checkbox" name="remember" class="checkbox checkbox-xs checkbox-primary mr-1"
+                    <input type="checkbox" name="remember" class="checkbox checkbox-xs mr-1"
                            bind:checked={form["remember"]}/>
                     <span class="label-text">Remember me</span>
                 </label>
@@ -75,8 +76,8 @@
 
             {#if canResetPassword}
                 <Link
-                    href="/password/reset"
-                    class="underline text-sm text-gray-600 hover:text-gray-900"
+                    href="{links['password.request']}"
+                    class="underline text-sm hover:text-neutral"
                 >
                     Forgot your password?
                 </Link>
@@ -85,13 +86,13 @@
 
         <div class="flex items-center justify-end mt-4">
             <Link
-                href="/register"
-                class="underline text-sm text-gray-600 hover:text-gray-900">
+                href="{links['register']}"
+                class="underline text-sm hover:text-neutral">
                 Don't have an account ?
             </Link>
             <button
                 disabled={form["processing"]}
-                class="btn btn-sm btn-neutral ml-4"
+                class="btn btn-sm btn-primary ml-4"
             >
                 Login
             </button>

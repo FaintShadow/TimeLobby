@@ -2,14 +2,16 @@
     import ApplicationLogo from "@/Components/ApplicationLogo.svelte";
     import {inertia, page} from "@inertiajs/svelte";
 
-    export let showNav = true;
-    export let showProfile = true;
+    export let showNav = true
+    export let showProfile = true
+    export let bodyClass = ""
+    export let mainClass = ""
+    let user = $page.props.user;
 
-    $: succ = $page.props.success || null;
-    $: user = $page.props.user;
+    $: success = $page.props.success;
 </script>
 
-<div class="min-h-dvh">
+<div class="min-h-dvh {bodyClass}">
     <div class="navbar bg-base-100 z-40">
         <div class="navbar-start">
             {#if showNav}
@@ -28,7 +30,7 @@
                                 d="M4 6h16M4 12h8m-8 6h16"/>
                         </svg>
                     </div>
-                    <ul class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                    <ul class="menu menu-sm dropdown-content bg-base-100 rounded-box z-40 mt-3 w-52 p-2 shadow">
                         {#if user.role !== 'admin'}
                             <li>
                                 <a>Academic</a>
@@ -66,7 +68,7 @@
         {#if showNav}
             <div class="navbar-center hidden lg:flex">
                 {#if user.role !== 'admin'}
-                    <ul class="menu menu-horizontal px-1">
+                    <ul class="menu menu-horizontal px-1 z-40">
                         <li>
                             <details>
                                 <summary>Academic</summary>
@@ -92,7 +94,7 @@
                         <li><a>Tags</a></li>
                     </ul>
                 {:else if user.role === 'admin'}
-                    <ul class="menu menu-horizontal px-1">
+                    <ul class="menu menu-horizontal px-1 z-40">
                         <li><a href="/admin/academics" use:inertia>Academics</a></li>
                         <li><a href="/admin/institutes" use:inertia>Institutes</a></li>
                     </ul>
@@ -103,31 +105,21 @@
             {#if showProfile}
                 <div class="dropdown dropdown-end">
                     <div tabindex="0" role="button" class="btn btn-ghost">
-                        <span>{user.firstname[0].toUpperCase() + ". " + user.lastname.toUpperCase()}</span>
+                        <span>{(user.firstname[0] + ". " + user.lastname).toUpperCase()}</span>
                     </div>
-                    <ul class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                    <ul class="menu menu-sm dropdown-content bg-base-100 rounded-box z-40 mt-3 w-52 p-2 shadow">
                         <li>
-                            <a href="" class="justify-between">Profile</a>
+                            <a href="/profile" class="justify-between">Profile</a>
                         </li>
-                        <li><a>Settings</a></li>
-                        <li><a href="{window.location.origin + '/logout'}">Logout</a></li>
+                        <li><a href="/settings">Settings</a></li>
+                        <li><a href="/logout">Logout</a></li>
                     </ul>
                 </div>
             {/if}
         </div>
     </div>
 
-    <!-- Notifications -->
-    {#if $succ}
-        <div class="toast toast-bottom toast-right">
-            <div class="alert alert-info z-50">
-                <span>{$succ}</span>
-            </div>
-        </div>
-    {/if}
-
-
-    <main {...$$restProps}>
+    <main class="{mainClass} z-10">
         <slot/>
     </main>
 </div>
